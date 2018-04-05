@@ -1,0 +1,427 @@
+﻿<!DOCTYPE html>
+<html>
+  <head>
+    <title>个人磁盘</title>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <meta name="apple-mobile-web-app-capable" content="yes"/>
+    <link href="resources/css/jquery-ui-themes.css" type="text/css" rel="stylesheet"/>
+    <link href="resources/css/axure_rp_page.css" type="text/css" rel="stylesheet"/>
+    <link href="data/styles.css" type="text/css" rel="stylesheet"/>
+    <link href="files/个人磁盘/styles.css" type="text/css" rel="stylesheet"/>
+    <script src="resources/scripts/jquery-1.7.1.min.js"></script>
+    <script src="resources/scripts/jquery-ui-1.8.10.custom.min.js"></script>
+    <script src="resources/scripts/prototypePre.js"></script>
+    <script src="data/document.js"></script>
+    <script src="resources/scripts/prototypePost.js"></script>
+    <script src="files/个人磁盘/data.js"></script>
+    <script type="text/javascript">
+      $axure.utils.getTransparentGifPath = function() { return 'resources/images/transparent.gif'; };
+      $axure.utils.getOtherPath = function() { return 'resources/Other.html'; };
+      $axure.utils.getReloadPath = function() { return 'resources/reload.html'; };
+    </script>
+  </head>
+  <body>
+    <div id="base" class="">
+
+      <!-- cancel (矩形) -->
+      <div id="u20639" class="ax_default button" data-label="cancel" title="Set a user to never be deleted.">
+        <div id="u20639_div" class=""></div>
+        <div id="u20639_text" class="text ">
+          <p><span>Never expire</span></p>
+        </div>
+      </div>
+
+      <!-- apply (矩形) -->
+      <div id="u20640" class="ax_default button" data-label="apply" title="Delete a selected user.">
+        <div id="u20640_div" class=""></div>
+        <div id="u20640_text" class="text ">
+          <p><span>Delete user</span></p>
+        </div>
+      </div>
+
+      <!-- Unnamed (复选框) -->
+      <div id="u20641" class="ax_default checkbox">
+        <label for="u20641_input" style="position: absolute;">
+          <div id="u20641_text" class="text " style="display:none; visibility: hidden">
+            <p></p>
+          </div>
+        </label>
+        <input id="u20641_input" type="checkbox" value="checkbox" checked/>
+      </div>
+
+      <!-- Unnamed (矩形) -->
+      <div id="u20642" class="ax_default label">
+        <div id="u20642_div" class=""></div>
+        <div id="u20642_text" class="text ">
+          <p><span>Enable User archive</span></p>
+        </div>
+      </div>
+
+      <!-- Unnamed (矩形) -->
+      <div id="u20643" class="ax_default label">
+        <div id="u20643_div" class=""></div>
+        <div id="u20643_text" class="text ">
+          <p><span>Storage space for everyone :</span></p>
+        </div>
+      </div>
+
+      <!-- Unnamed (矩形) -->
+      <div id="u20644" class="ax_default label">
+        <div id="u20644_div" class=""></div>
+        <div id="u20644_text" class="text ">
+          <p><span>The number of Game Archive that can be stored :</span></p>
+        </div>
+      </div>
+
+      <!-- Unnamed (下拉列表框) -->
+      <div id="u20645" class="ax_default droplist">
+        <select id="u20645_input">
+          <option value="1">1</option>
+          <option selected value="2">2</option>
+          <option value="3">3</option>
+          <option value="4">4</option>
+          <option value="5">5</option>
+          <option value="6">6</option>
+        </select>
+      </div>
+
+      <!-- Unnamed (下拉列表框) -->
+      <div id="u20646" class="ax_default droplist">
+        <select id="u20646_input">
+          <option value="128MB">128MB</option>
+          <option selected value="512MB">512MB</option>
+          <option value="1024MB">1024MB</option>
+          <option value="2048MB">2048MB</option>
+          <option value="4096MB">4096MB</option>
+        </select>
+      </div>
+
+      <!-- Unnamed (矩形) -->
+      <div id="u20647" class="ax_default label">
+        <div id="u20647_div" class=""></div>
+        <div id="u20647_text" class="text ">
+          <p><span>The path of the user archive server :</span></p>
+        </div>
+      </div>
+
+      <!-- Unnamed (矩形) -->
+      <div id="u20648" class="ax_default box_1">
+        <div id="u20648_div" class=""></div>
+        <div id="u20648_text" class="text ">
+          <p><span>D:\NMenuServer\Archive\</span></p>
+        </div>
+      </div>
+
+      <!-- Unnamed (矩形) -->
+      <div id="u20649" class="ax_default label">
+        <div id="u20649_div" class=""></div>
+        <div id="u20649_text" class="text ">
+          <p><span>…</span></p>
+        </div>
+      </div>
+
+      <!-- Unnamed (矩形) -->
+      <div id="u20650" class="ax_default label">
+        <div id="u20650_div" class=""></div>
+        <div id="u20650_text" class="text ">
+          <p><span>Automatically delete users that have not been logged in more than </span></p>
+        </div>
+      </div>
+
+      <!-- Unnamed (下拉列表框) -->
+      <div id="u20651" class="ax_default droplist">
+        <select id="u20651_input">
+          <option selected value="30days">30days</option>
+          <option value="90days">90days</option>
+          <option value="180days">180days</option>
+          <option value="Not delete">Not delete</option>
+        </select>
+      </div>
+
+      <!-- Unnamed (矩形) -->
+      <div id="u20652" class="ax_default label">
+        <div id="u20652_div" class=""></div>
+        <div id="u20652_text" class="text ">
+          <p><span>User management</span></p>
+        </div>
+      </div>
+
+      <!-- Unnamed (表格) -->
+      <div id="u20653" class="ax_default">
+
+        <!-- Unnamed (单元格) -->
+        <div id="u20654" class="ax_default table_cell">
+          <img id="u20654_img" class="img " src="images/个人磁盘/u20654.png"/>
+          <div id="u20654_text" class="text ">
+            <p><span>Name</span></p>
+          </div>
+        </div>
+
+        <!-- Unnamed (单元格) -->
+        <div id="u20655" class="ax_default table_cell">
+          <img id="u20655_img" class="img " src="images/个人磁盘/u20655.png"/>
+          <div id="u20655_text" class="text ">
+            <p><span>Login IP</span></p>
+          </div>
+        </div>
+
+        <!-- Unnamed (单元格) -->
+        <div id="u20656" class="ax_default table_cell">
+          <img id="u20656_img" class="img " src="images/个人磁盘/u20656.png"/>
+          <div id="u20656_text" class="text ">
+            <p><span>Last login time</span></p>
+          </div>
+        </div>
+
+        <!-- Unnamed (单元格) -->
+        <div id="u20657" class="ax_default table_cell">
+          <img id="u20657_img" class="img " src="images/个人磁盘/u20657.png"/>
+          <div id="u20657_text" class="text ">
+            <p><span>Validity</span></p>
+          </div>
+        </div>
+
+        <!-- 11 (单元格) -->
+        <div id="u20658" class="ax_default table_cell" data-label="11">
+          <img id="u20658_img" class="img " src="images/个人磁盘/11_u20658.png"/>
+          <div id="u20658_text" class="text ">
+            <p><span>Peter</span></p>
+          </div>
+        </div>
+
+        <!-- 12 (单元格) -->
+        <div id="u20659" class="ax_default table_cell" data-label="12">
+          <img id="u20659_img" class="img " src="images/个人磁盘/12_u20659.png"/>
+          <div id="u20659_text" class="text ">
+            <p><span>192.168.1.102</span></p>
+          </div>
+        </div>
+
+        <!-- 13 (单元格) -->
+        <div id="u20660" class="ax_default table_cell" data-label="13">
+          <img id="u20660_img" class="img " src="images/个人磁盘/13_u20660.png"/>
+          <div id="u20660_text" class="text ">
+            <p><span>2017-10-12 23:56:12</span></p>
+          </div>
+        </div>
+
+        <!-- 14 (单元格) -->
+        <div id="u20661" class="ax_default table_cell" data-label="14">
+          <img id="u20661_img" class="img " src="images/个人磁盘/14_u20661.png"/>
+          <div id="u20661_text" class="text ">
+            <p><span>93days</span></p>
+          </div>
+        </div>
+
+        <!-- 21 (单元格) -->
+        <div id="u20662" class="ax_default table_cell" data-label="21">
+          <img id="u20662_img" class="img " src="images/个人磁盘/11_u20658.png"/>
+          <div id="u20662_text" class="text ">
+            <p><span>Mary</span></p>
+          </div>
+        </div>
+
+        <!-- 22 (单元格) -->
+        <div id="u20663" class="ax_default table_cell" data-label="22">
+          <img id="u20663_img" class="img " src="images/个人磁盘/12_u20659.png"/>
+          <div id="u20663_text" class="text ">
+            <p><span>192.168.1.103</span></p>
+          </div>
+        </div>
+
+        <!-- 23 (单元格) -->
+        <div id="u20664" class="ax_default table_cell" data-label="23">
+          <img id="u20664_img" class="img " src="images/个人磁盘/13_u20660.png"/>
+          <div id="u20664_text" class="text ">
+            <p><span>2017-03-28 12:43:20</span></p>
+          </div>
+        </div>
+
+        <!-- 24 (单元格) -->
+        <div id="u20665" class="ax_default table_cell" data-label="24">
+          <img id="u20665_img" class="img " src="images/个人磁盘/14_u20661.png"/>
+          <div id="u20665_text" class="text ">
+            <p><span>12days</span></p>
+          </div>
+        </div>
+
+        <!-- 31 (单元格) -->
+        <div id="u20666" class="ax_default table_cell" data-label="31">
+          <img id="u20666_img" class="img " src="images/个人磁盘/11_u20658.png"/>
+          <div id="u20666_text" class="text ">
+            <p><span>Nina</span></p>
+          </div>
+        </div>
+
+        <!-- 32 (单元格) -->
+        <div id="u20667" class="ax_default table_cell" data-label="32">
+          <img id="u20667_img" class="img " src="images/个人磁盘/12_u20659.png"/>
+          <div id="u20667_text" class="text ">
+            <p><span>192.168.1.117</span></p>
+          </div>
+        </div>
+
+        <!-- 33 (单元格) -->
+        <div id="u20668" class="ax_default table_cell" data-label="33">
+          <img id="u20668_img" class="img " src="images/个人磁盘/13_u20660.png"/>
+          <div id="u20668_text" class="text ">
+            <p><span>2017-07-18 18:34:29</span></p>
+          </div>
+        </div>
+
+        <!-- 34 (单元格) -->
+        <div id="u20669" class="ax_default table_cell" data-label="34">
+          <img id="u20669_img" class="img " src="images/个人磁盘/14_u20661.png"/>
+          <div id="u20669_text" class="text ">
+            <p><span>56days</span></p>
+          </div>
+        </div>
+
+        <!-- 41 (单元格) -->
+        <div id="u20670" class="ax_default table_cell" data-label="41">
+          <img id="u20670_img" class="img " src="images/个人磁盘/11_u20658.png"/>
+          <div id="u20670_text" class="text ">
+            <p><span>Luther</span></p>
+          </div>
+        </div>
+
+        <!-- 42 (单元格) -->
+        <div id="u20671" class="ax_default table_cell" data-label="42">
+          <img id="u20671_img" class="img " src="images/个人磁盘/12_u20659.png"/>
+          <div id="u20671_text" class="text ">
+            <p><span>192.168.1.151</span></p>
+          </div>
+        </div>
+
+        <!-- 43 (单元格) -->
+        <div id="u20672" class="ax_default table_cell" data-label="43">
+          <img id="u20672_img" class="img " src="images/个人磁盘/13_u20660.png"/>
+          <div id="u20672_text" class="text ">
+            <p><span>2017-08-22 23:50:33</span></p>
+          </div>
+        </div>
+
+        <!-- 44 (单元格) -->
+        <div id="u20673" class="ax_default table_cell" data-label="44">
+          <img id="u20673_img" class="img " src="images/个人磁盘/14_u20661.png"/>
+          <div id="u20673_text" class="text ">
+            <p><span>Never expire</span></p>
+          </div>
+        </div>
+
+        <!-- 51 (单元格) -->
+        <div id="u20674" class="ax_default table_cell" data-label="51">
+          <img id="u20674_img" class="img " src="images/个人磁盘/11_u20658.png"/>
+          <div id="u20674_text" class="text ">
+            <p><span>John</span></p>
+          </div>
+        </div>
+
+        <!-- 52 (单元格) -->
+        <div id="u20675" class="ax_default table_cell" data-label="52">
+          <img id="u20675_img" class="img " src="images/个人磁盘/12_u20659.png"/>
+          <div id="u20675_text" class="text ">
+            <p><span>192.168.1.129</span></p>
+          </div>
+        </div>
+
+        <!-- 53 (单元格) -->
+        <div id="u20676" class="ax_default table_cell" data-label="53">
+          <img id="u20676_img" class="img " src="images/个人磁盘/13_u20660.png"/>
+          <div id="u20676_text" class="text ">
+            <p><span>2017-11-03 15:27:59</span></p>
+          </div>
+        </div>
+
+        <!-- 54 (单元格) -->
+        <div id="u20677" class="ax_default table_cell" data-label="54">
+          <img id="u20677_img" class="img " src="images/个人磁盘/14_u20661.png"/>
+          <div id="u20677_text" class="text ">
+            <p><span>120days</span></p>
+          </div>
+        </div>
+
+        <!-- Unnamed (单元格) -->
+        <div id="u20678" class="ax_default table_cell">
+          <img id="u20678_img" class="img " src="images/个人磁盘/11_u20658.png"/>
+        </div>
+
+        <!-- Unnamed (单元格) -->
+        <div id="u20679" class="ax_default table_cell">
+          <img id="u20679_img" class="img " src="images/个人磁盘/12_u20659.png"/>
+        </div>
+
+        <!-- Unnamed (单元格) -->
+        <div id="u20680" class="ax_default table_cell">
+          <img id="u20680_img" class="img " src="images/个人磁盘/13_u20660.png"/>
+        </div>
+
+        <!-- Unnamed (单元格) -->
+        <div id="u20681" class="ax_default table_cell">
+          <img id="u20681_img" class="img " src="images/个人磁盘/14_u20661.png"/>
+        </div>
+
+        <!-- Unnamed (单元格) -->
+        <div id="u20682" class="ax_default table_cell">
+          <img id="u20682_img" class="img " src="images/个人磁盘/u20682.png"/>
+        </div>
+
+        <!-- Unnamed (单元格) -->
+        <div id="u20683" class="ax_default table_cell">
+          <img id="u20683_img" class="img " src="images/个人磁盘/u20683.png"/>
+        </div>
+
+        <!-- Unnamed (单元格) -->
+        <div id="u20684" class="ax_default table_cell">
+          <img id="u20684_img" class="img " src="images/个人磁盘/u20684.png"/>
+        </div>
+
+        <!-- Unnamed (单元格) -->
+        <div id="u20685" class="ax_default table_cell">
+          <img id="u20685_img" class="img " src="images/个人磁盘/u20685.png"/>
+        </div>
+      </div>
+
+      <!-- apply (矩形) -->
+      <div id="u20686" class="ax_default button" data-label="apply" title="Refresh user list.">
+        <div id="u20686_div" class=""></div>
+        <div id="u20686_text" class="text ">
+          <p><span>Refresh List</span></p>
+        </div>
+      </div>
+
+      <!-- apply (矩形) -->
+      <div id="u20687" class="ax_default button" data-label="apply" title="Modify a user's password.">
+        <div id="u20687_div" class=""></div>
+        <div id="u20687_text" class="text ">
+          <p><span>Modify password</span></p>
+        </div>
+      </div>
+
+      <!-- 导入备份 (组合) -->
+      <div id="u20688" class="ax_default ax_default_hidden" data-label="导入备份" style="display:none; visibility: hidden" data-left="0" data-top="0" data-width="0" data-height="0">
+
+        <!-- Unnamed (图片) -->
+        <div id="u20689" class="ax_default _图片">
+          <img id="u20689_img" class="img " src="images/配置向导/u20197.png"/>
+        </div>
+
+        <!-- Unnamed (图片) -->
+        <div id="u20690" class="ax_default _图片">
+          <img id="u20690_img" class="img " src="images/第三步：安装目录/u20177.png"/>
+        </div>
+
+        <!-- Unnamed (图片) -->
+        <div id="u20691" class="ax_default _图片">
+          <img id="u20691_img" class="img " src="images/第三步：安装目录/u20178.png"/>
+        </div>
+
+        <!-- Unnamed (图片) -->
+        <div id="u20692" class="ax_default _图片">
+          <img id="u20692_img" class="img " src="images/第三步：安装目录/u20179.png"/>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>
