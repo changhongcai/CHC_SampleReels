@@ -1,4 +1,4 @@
-﻿// 8.0.0.3355. Generated 8/24/2017 4:38:58 AM UTC
+﻿// 8.0.0.3372. Generated 2/5/2018 11:05:16 PM UTC
 
 //***** axQuery.js *****//
 $axure = function(query) {
@@ -278,7 +278,7 @@ $axure = function(query) {
     };
 
     // Get the path to the child, where non leaf nodes can be masters, layers, dynamic panels, and repeaters.
-    $ax.public.fn.getChildren = function(deep) {
+    $ax.public.fn.getChildren = function(deep, ignoreUnplaced) { // ignoreUnplaced should probably be the default, but when that is done a full audit of usages should be done
         var elementIds = this.getElementIds();
         var children = [];
 
@@ -334,7 +334,8 @@ $axure = function(query) {
                     if(typeof(id) == 'undefined' && childObj.is('a')) id = $(childObj.children()[0]).attr('id');
                     // Ignore annotations and any other children that are not elements
                     if (id.split('_').length > 1) continue;
-
+                    // Ignore Unplaced
+                    if(ignoreUnplaced && $ax.visibility.isScriptIdLimbo($ax.repeater.getScriptIdFromElementId(id))) continue;
                     childrenIds.push(id);
                 }
                 
@@ -735,7 +736,8 @@ $axure.internal(function($ax) {
             if(!dObj.annotation) return;
 
             if(dObj.type == 'hyperlink') {
-                var textId = $ax.GetParentIdFromLink(elementId);
+                var parentId = $ax.GetParentIdFromLink(elementId);
+                var textId = $ax.GetTextPanelId(parentId);
 
                 var elementIdQuery = $('#' + elementId);
                 elementIdQuery.after("<span id='" + elementId + "_ann'>&#8203;</span>");
@@ -752,7 +754,7 @@ $axure.internal(function($ax) {
                     return false;
                 });
 
-                _updateLinkLocations(elementId);
+                _updateLinkLocations(parentId);
             } else {
                 if($ax.document.configuration.useLabels) {
                     var label = $('#' + elementId).attr("data-label");
@@ -856,14 +858,16 @@ $axure.internal(function($ax) {
     $ax.constants.TEXT_TYPE = 'richTextPanel';
     $ax.constants.LINK_TYPE = 'hyperlink';
 
+    // TODO: Need solid passo f this. Constants should be able to bemade local, may need some public lists or something.
+    //       public.fn function should take not arg and use this. May need some $ax.IsType fuctions that will take a type arg and be static
     $ax.public.fn.IsTable = function (type) { return type == $ax.constants.TABLE_TYPE; }
     $ax.public.fn.IsMenuObject = function (type) { return type == $ax.constants.MENU_OBJECT_TYPE; }
     $ax.public.fn.IsMaster = function (type) { return type == $ax.constants.MASTER_TYPE; }
     $ax.public.fn.IsPage = function (type) { return type == $ax.constants.PAGE_TYPE; }
     $ax.public.fn.IsReferenceDiagramObject = function (type) { return type == $ax.constants.REFERENCE_DIAGRAM_OBJECT_TYPE; }
     $ax.public.fn.IsRepeater = function (type) { return type == $ax.constants.REPEATER_TYPE; }
-    $ax.public.fn.IsDynamicPanel = function (type) { return type == $ax.constants.DYNAMIC_PANEL_TYPE; }
-    $ax.public.fn.IsLayer = function (type) { return type == $ax.constants.LAYER_TYPE; }
+    $ax.public.fn.IsDynamicPanel = $ax.IsDynamicPanel = function (type) { return type == $ax.constants.DYNAMIC_PANEL_TYPE; }
+    $ax.public.fn.IsLayer = $ax.IsLayer = function (type) { return type == $ax.constants.LAYER_TYPE; }
     $ax.public.fn.IsTextBox = function (type) { return type == $ax.constants.TEXT_BOX_TYPE; }
     $ax.public.fn.IsTextArea = function (type) { return type == $ax.constants.TEXT_AREA_TYPE; }
     $ax.public.fn.IsListBox = function (type) { return type == $ax.constants.LIST_BOX_TYPE; }
@@ -1749,7 +1753,7 @@ $axure.internal(function($ax) {
                 if ($ax.public.fn.IsImageBox(widgetType) || $ax.public.fn.IsVector(widgetType)) $ax.style.SetWidgetEnabled(elementId, enabled);
                 if ($ax.public.fn.IsDynamicPanel(widgetType) || $ax.public.fn.IsLayer(widgetType)) {
                     $ax.style.SetWidgetEnabled(elementId, enabled);
-                    var children = this.getChildren()[index].children;
+                    var children = this.getChildren(false, true)[index].children;
                     for(var i = 0; i < children.length; i++) {
                         $axure('#' + children[i]).enabled(enabled);
                     }
@@ -2684,8 +2688,7 @@ $axure.internal(function($ax) {
                 var newDiv = $('<div id="' + newId + '" class="text" style="visibility: inherit; position: absolute"><p><span></span></p></div>');
                 buttonShape.append(newDiv);
 
-                var adaptiveId = $ax.adaptive.currentViewId;
-                if(adaptiveId) $ax.style.setAdaptiveStyle(id, $ax.style.computeAllOverrides(id, undefined, $ax.style.generateState(id), adaptiveId));
+                $ax.style.setAdaptiveStyle(id, $ax.style.computeAllOverrides(id, undefined, $ax.style.generateState(id), $ax.adaptive.currentViewId));
 
                 panelDiv = newDiv[0];
             }

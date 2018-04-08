@@ -1,4 +1,4 @@
-﻿// 8.0.0.3355. Generated 8/24/2017 4:38:58 AM UTC
+﻿// 8.0.0.3372. Generated 2/5/2018 11:05:16 PM UTC
 
 //***** messagecenter.js *****//
 if (typeof console == 'undefined') console = {
@@ -943,7 +943,7 @@ $axure.internal(function($ax) {
     };
 
     // TODO: It may be a good idea to split this into multiple functions, or at least pull out more similar functions into private methods
-    var _initializeObjectEvents = function(query, allowItem) {
+    var _initializeObjectEvents = function(query, refreshType) {
         query.each(function(dObj, elementId) {
             var $element = $jobj(elementId);
             var itemId = $ax.repeater.getItemIdFromElementId(elementId);
@@ -975,26 +975,26 @@ $axure.internal(function($ax) {
 
             _attachIxStyleEvents(dObj, elementId, $element);
 
-            var $axElement = undefined;
-            // Unless you are pre eval - don't allow item and have an item id - then set enabled/selected through js as usual
-            if(allowItem || !itemId) {
+            var $axElement = $ax('#' + elementId);
+            // Base case is set up selected disabled based on the default in the axobj, for non, repeaters and resetting repeaters
+            var itemReset = refreshType == $ax.repeater.refreshType.reset;
+            if(!itemId || itemReset) {
                 //initialize disabled elements, do this first before selected, cause if a widget is disabled, we don't want to apply selected style anymore
-                if(($ax.public.fn.IsVector(dObj.type) || $ax.public.fn.IsImageBox(dObj.type) || isDynamicPanel || $ax.public.fn.IsLayer(dObj.type)) && dObj.disabled) {
-                    if(!$axElement) $axElement = $ax('#' + elementId);
-                    $axElement.enabled(false);
-                }
+                if($ax.public.fn.IsVector(dObj.type) || $ax.public.fn.IsImageBox(dObj.type) || isDynamicPanel || $ax.public.fn.IsLayer(dObj.type)) {
+                    if(dObj.disabled) $axElement.enabled(false);
 
-                // Initialize selected elements if not in repeater
-                if(($ax.public.fn.IsVector(dObj.type) || $ax.public.fn.IsImageBox(dObj.type) || isDynamicPanel || $ax.public.fn.IsLayer(dObj.type)) && dObj.selected) {
-                    if(!$axElement) $axElement = $ax('#' + elementId);
-                    $axElement.selected(true);
+                    // Initialize selected elements
+                    if(dObj.selected) $axElement.selected(true);
                 }
+            } else if(refreshType == $ax.repeater.refreshType.preEval) {
+                // Otherwise everything should be set up correctly by pre-eval, want to set up selected disabled dictionaries (and disabled status)
+                // Disabled layer/dynamic panel don't have the disabled class, but they do have the disabled attr written out, so use that in that case
+                if ($element.hasClass('disabled') ||
+                    (($ax.IsLayer(dObj.type) || $ax.IsDynamicPanel(dObj.type)) && $element.attr('disabled'))) $axElement.enabled(false);
+                if($element.hasClass('selected')) $axElement.selected(true);
             } else {
-                // Otherwise everything should be set up correctly by pre-eval, except disabled is needed
-                if($element.hasClass('disabled')) {
-                    $axElement = $ax('#' + elementId);
-                    $axElement.enabled(false);
-                }
+                // Persist means we want to leave it as is, but we want to make sure we use selected based off of the backing data, and not some class that exists because of the reset
+                $element.removeClass('selected');
             }
 
             if(OS_MAC && WEBKIT) {
@@ -4641,7 +4641,7 @@ $axure.internal(function($ax) {
                     var lines = value.split(/\r\n|\n/);
                     //if we are dealing with only one line, just reuse the old one
                     if(spans.length === 1 && lines.length === 1) {
-                        spans[0].innerHTML = value;
+                        $(spans[0]).text(value);
                         return;
                     }
 
@@ -5413,20 +5413,20 @@ $axure.internal(function($ax) {
         if(!info || info.active == active) return;
         info.active = active;
 
-        if(active) var value = info.text;
-        else if(!ANDROID) value = clearText ? '' : document.getElementById(inputId).value;
+        if(active) var text = info.text;
+        else if(!ANDROID) text = clearText ? '' : document.getElementById(inputId).value;
         else {
             var currentText = document.getElementById(inputId).value;
-            if(!clearText) value = currentText;
-            else if(currentText == info.text) value = "";
+            if(!clearText) text = currentText;
+            else if(currentText == info.text) text = "";
             else {
                 var lastIndex = currentText.lastIndexOf(info.text);
                 //here i am assuming the text is always inserted in front
-                value = currentText.substring(0, lastIndex);
+                text = currentText.substring(0, lastIndex);
             }
         }
 
-        $ax.style.SetWidgetPlaceholder(elementId, active, value, info.password);
+        $ax.style.SetWidgetPlaceholder(elementId, active, text, info.password);
     };
     _placeholderManager.updatePlaceholder = _updatePlaceholder;
 
@@ -5872,6 +5872,12 @@ $axure.internal(function($ax) {
     var _repeaterManager = {};
     $ax.repeater = _repeaterManager;
 
+    var _refreshType = _repeaterManager.refreshType = {
+        reset: 1,
+        persist: 2,
+        preEval: 3
+    };
+
     //This is a mapping of current editItems
     var repeaterToEditItems = {};
     //This is a mapping of current filters
@@ -5913,7 +5919,7 @@ $axure.internal(function($ax) {
         $ax(function(obj, repeaterId) {
             return $ax.public.fn.IsRepeater(obj.type);
         }).each(function(obj, repeaterId) {
-            _refreshRepeater(repeaterId, undefined, !fullRefresh[repeaterId]);
+            _refreshRepeater(repeaterId, undefined, _refreshType.reset, !fullRefresh[repeaterId]);
             //// Fix selected and default if necessary
             //var states = obj.evaluatedStates[repeaterId];
             //if(!states) return; // If there are no evaluated states the repeater id key could not be mapped to an array of states.
@@ -5943,11 +5949,16 @@ $axure.internal(function($ax) {
     };
     _repeaterManager.setDataSet = _setRepeaterDataSet;
 
-    var _refreshRepeater = function (repeaterId, eventInfo, itemsPregen) {
+    var _refreshRepeater = function(repeaterId, eventInfo, refreshType, itemsPregen) {
+        if(!refreshType) refreshType = _refreshType.reset; // Set default
         if(!repeatersReady) {
             fullRefresh[repeaterId] = true;
             return;
         }
+
+        // Reset selected/disabled dictionaries upon reset, if necessary (reset must, persist can't, and preeval doesn't care because it hasn't been set up yet.
+        if(refreshType == _refreshType.reset) $ax.style.clearStateForRepeater(repeaterId);
+
         // Don't show if you have a parent rdos thats limboed.
         var rdoPath = $ax.getPathFromScriptId(repeaterId);
         // Check each parent rdo through appropriate views to see if you are limboed
@@ -6030,9 +6041,9 @@ $axure.internal(function($ax) {
                 var itemId = orderedIds[pos];
                 itemElementId = _createElementId(repeaterId, itemId);
                 var jobj = $jobj(itemElementId);
-                var preeval = jobj.hasClass('preeval');
-                for(var i = 0; i < templateIds.length; i++) $ax.initializeObjectEvents($ax('#' + _createElementId(templateIds[i], itemId)), !preeval);
-                if(preeval) {
+                if(jobj.hasClass('preeval')) refreshType = _refreshType.preEval;
+                for(var i = 0; i < templateIds.length; i++) $ax.initializeObjectEvents($ax('#' + _createElementId(templateIds[i], itemId)), refreshType);
+                if(refreshType == _refreshType.preEval) {
                     preevalMap[itemId] = true;
                     jobj.removeClass('preeval');
                 }
@@ -6062,7 +6073,7 @@ $axure.internal(function($ax) {
             div.css({
                 width: offset.width,
                 height: offset.height
-        });
+            });
 
             _applyColorCss(background, div);
             var altDiv = div;
@@ -6152,7 +6163,14 @@ $axure.internal(function($ax) {
             // Had to move this here because it sets up cursor: pointer on inline links,
             // but must be done before style cached when adaptive view is set.
             // TODO: Should be able to combine this with initialization done in pregen items. Just need to have ids and template ids be the same.
-            for(var i = 0; i < ids.length; i++) $ax.initializeObjectEvents($ax('#' + ids[i]), true);
+            for (var i = 0; i < ids.length; i++) {
+                var id = ids[i];
+                var childJobj = $jobj(id);
+                if (obj.repeaterPropMap.isolateSelection && childJobj.attr('selectiongroup')) {
+                    childJobj.attr('selectiongroup', _createElementId(childJobj.attr('selectiongroup'), _getItemIdFromElementId(id)));
+                }
+                $ax.initializeObjectEvents($ax('#' + id), refreshType);
+            }
         }
 
         var query = _getItemQuery(repeaterId);
@@ -6162,14 +6180,8 @@ $axure.internal(function($ax) {
         $ax.annotation.InitializeAnnotations(query);
 
         for(var index = 0; index < ids.length; index++) {
-            var id = ids[index];
-            var childObj = $obj(id);
-            var childJobj = $jobj(id);
-            var childItemId = _getItemIdFromElementId(id);
+            id = ids[index];
             
-            if(obj.repeaterPropMap.isolateSelection && childJobj.attr('selectiongroup')) {
-                childJobj.attr('selectiongroup', _createElementId(childJobj.attr('selectiongroup'), childItemId));
-            }
             if ($ax.ieColorManager) $ax.ieColorManager.applyBackground($ax('#' + id));
             $ax.style.initializeObjectTextAlignment($ax('#' + id));
             $ax.applyHighlight($ax('#' + id), true);
@@ -6193,6 +6205,9 @@ $axure.internal(function($ax) {
         if(shown && !itemsPregen) document.getElementById(repeaterId).style.visibility = 'inherit';
 
         $ax.dynamicPanelManager.fitParentPanel(repeaterId);
+
+        // Need to reapply the state style after refresh for text styles, and for applying a non-default style that wasn't reset for certain refreshes (adaptive changed for example). This could be way more selective but doing a safe change for the moment
+        if(refreshType != _refreshType.preEval) $ax.style.updateStateClass(repeaterId);
 
         // Right now we assume only one refresh at a time. If we can manually trigger refreshes, that may possibly change.
         $ax.action.refreshEnd();
@@ -6220,7 +6235,7 @@ $axure.internal(function($ax) {
             if(!$ax.public.fn.IsRepeater(diagramObject.type)) return;
             if($ax.visibility.isElementIdLimboOrInLimboContainer(elementId)) return;
             _initPageInfo(diagramObject, elementId);
-            _refreshRepeater(elementId, $ax.getEventInfoFromEvent($ax.getjBrowserEvent()));
+            _refreshRepeater(elementId, $ax.getEventInfoFromEvent($ax.getjBrowserEvent()), _refreshType.persist);
         });
     };
 
@@ -7880,9 +7895,13 @@ $axure.internal(function($ax) {
             if(child[0] && child[0].tagName == 'A' && child.hasClass('basiclink')) child = child.children();
             var childId = child.attr('id');
 
-            // Don't move self, and check id to make sure it is a widget and lastly check if it is a fixed panel.
-            if(childId == id || !childId || childId[0] != 'u' || childId.indexOf('ann') != -1 || childId.indexOf('ref') != -1 || $obj(childId).fixedVertical) {
-                allMove = false;
+            // TODO: Played with this a lot, went with a safer fix, but I don't like the catch all with !$obj(childId), should handle these cases explicitally.
+            //       ann/ref suffixes should skip without turning off allMove, lightbox should be skipped, and is unclear if allMove should be turned off, I think others including container, inner_container, div, img, and text should not be hit ever.
+            // Don't move self, and check id to make sure it a widget and not a fixed panel
+            if(childId == id || !childId || childId[0] != 'u' || !$obj(childId) || $obj(childId).fixedVertical) {
+                // ann/ref widgets should not stop allMove, they move if their widget does, and that widget will be checked and turn this off if it doesn't move
+                var suffix = childId && childId.split('_')[1];
+                allMove = allMove && (suffix == 'ann' || suffix == 'ref');
                 continue;
             }
 
@@ -7890,7 +7909,7 @@ $axure.internal(function($ax) {
                 $ax.visibility.pushContainer(childId, false);
                 var addSelf;
                 var container = $ax.visibility.applyWidgetContainer(childId, true, true);
-                var layerChildren = $ax.visibility.getRealChildren(child.children());
+                var layerChildren = (container.length ? container : child).children();
                 //if(container.length) {
                 var offsetX = -$ax.getNumFromPx(container.css('left'));
                 var offsetY = -$ax.getNumFromPx(container.css('top'));
@@ -10576,7 +10595,7 @@ $axure.internal(function($ax) {
             var viewChain = $ax.adaptive.getAdaptiveIdChain($ax.adaptive.currentViewId);
             viewChain[viewChain.length] = '';
             var obj = $obj(id);
-            if(obj.type == "dynamicPanel") return SELECTED;
+            if($ax.IsDynamicPanel(obj.type) || $ax.IsLayer(obj.type)) return SELECTED;
 
             var any = function(dict) {
                 for(var key in dict) return true;
@@ -10678,7 +10697,7 @@ $axure.internal(function($ax) {
         } else $ax.style.SetWidgetSelected(id, $ax.style.IsWidgetSelected(id), true);
     };
 
-    $ax.style.SetWidgetPlaceholder = function(id, value, text, password) {
+    $ax.style.SetWidgetPlaceholder = function(id, active, text, password) {
         var inputId = $ax.repeater.applySuffixToElementId(id, '_input');
 
         // Right now this is the only style on the widget. If other styles (ex. Rollover), are allowed
@@ -10693,7 +10712,7 @@ $axure.internal(function($ax) {
         if (height) obj.css('height', height);
         if (width) obj.css('width', width);
 
-        if(!value) {
+        if(!active) {
             try { //ie8 and below error
                 if(password) document.getElementById(inputId).type = 'password';
             } catch(e) { } 
@@ -10707,7 +10726,7 @@ $axure.internal(function($ax) {
 
             _applyCssProps(element, styleProperties, true);
             try { //ie8 and below error
-                if(password) document.getElementById(inputId).type = 'text';
+                if(password && text) document.getElementById(inputId).type = 'text';
             } catch(e) { }
         }
         obj.val(text);
@@ -10842,7 +10861,7 @@ $axure.internal(function($ax) {
     };
 
     var _applyImageAndTextJson = function(id, event) {
-        var textId = $ax.GetTextPanelId(id, true);
+        var textId = $ax.GetTextPanelId(id);
         if(textId) _resetTextJson(id, textId);
 
         // This should never be the case
@@ -10855,7 +10874,7 @@ $axure.internal(function($ax) {
         if(imageUrl) _applyImage(id, imageUrl, event);
 
         var style = _computeAllOverrides(id, undefined, event, $ax.adaptive.currentViewId);
-        if(!$.isEmptyObject(style)) _applyTextStyle(textId, style);
+        if(!$.isEmptyObject(style) && textId) _applyTextStyle(textId, style);
 
         _updateStateClasses(id, event);
         _updateStateClasses($ax.repeater.applySuffixToElementId(id, '_div'), event);
@@ -11187,19 +11206,22 @@ $axure.internal(function($ax) {
         var textObj = $jobj(textId);
         var textObjParent = textObj.offsetParent();
         var parentId = textObjParent.attr('id');
-        var isConnector = false;
-        if(parentId) {
-            parentId = $ax.visibility.getWidgetFromContainer(textObjParent.attr('id'));
-            textObjParent = $jobj(parentId);
-            var parentObj = $obj(parentId);
-            if(parentObj['bottomTextPadding']) bottomParam = parentObj['bottomTextPadding'];
-            if(parentObj['topTextPadding']) topParam = parentObj['topTextPadding'];
-            if(parentObj['leftTextPadding']) leftParam = parentObj['leftTextPadding'];
-            if(parentObj['rightTextPadding']) rightParam = parentObj['rightTextPadding'];
-
-            // smart shapes are mutually exclusive from compound vectors.
-            isConnector = parentObj.type == $ax.constants.CONNECTOR_TYPE;
+        if(!parentId) {
+            // Only case should be for radio/checkbox that get the label now because it must be absolute positioned for animate (offset parent ignored it before)
+            textObjParent = textObjParent.parent();
+            parentId = textObjParent.attr('id');
         }
+
+        parentId = $ax.visibility.getWidgetFromContainer(textObjParent.attr('id'));
+        textObjParent = $jobj(parentId);
+        var parentObj = $obj(parentId);
+        if(parentObj['bottomTextPadding']) bottomParam = parentObj['bottomTextPadding'];
+        if(parentObj['topTextPadding']) topParam = parentObj['topTextPadding'];
+        if(parentObj['leftTextPadding']) leftParam = parentObj['leftTextPadding'];
+        if(parentObj['rightTextPadding']) rightParam = parentObj['rightTextPadding'];
+
+        // smart shapes are mutually exclusive from compound vectors.
+        var isConnector = parentObj.type == $ax.constants.CONNECTOR_TYPE;
         if(isConnector) return;
 
         var axTextObjectParent = $ax('#' + textObjParent.attr('id'));
@@ -11278,6 +11300,22 @@ $axure.internal(function($ax) {
 
             $jobj(id).addClass('disabled');
             _applyImageAndTextJson(id, $ax.style.generateState(id));
+        }
+    }
+
+    $ax.style.clearStateForRepeater = function(repeaterId) {
+        var children = $ax.getChildElementIdsForRepeater(repeaterId);
+        for(var i = 0; i < children.length; i++) {
+            var id = children[i];
+            delete _selectedWidgets[id];
+            delete _disabledWidgets[id];
+        }
+    }
+
+    _style.updateStateClass = function (repeaterId) {
+        var subElementIds = $ax.getChildElementIdsForRepeater(repeaterId);
+        for (var i = 0; i < subElementIds.length; i++) {
+            _applyImageAndTextJson(subElementIds[i], $ax.style.generateState(subElementIds[i]));
         }
     }
 
